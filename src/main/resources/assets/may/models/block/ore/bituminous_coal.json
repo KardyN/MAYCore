@@ -1,0 +1,8 @@
+{
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"particle": "tfc:item/ore/bituminous_coal"
+	},
+	"display": {}
+}

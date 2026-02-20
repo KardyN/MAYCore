@@ -4,12 +4,9 @@
   "mixins": [
     "create.AnimatedBlazeBurnerMixin",
     "create.BasinBlockEntityMixin",
-    "create.BasinCategoryMixin"
+    "create.BasinCategoryMixin",
   ],
   "client": [],
   "server": [],
-  "refmap": "may.refmap.json",
-  "injectors": {
-    "defaultRequire": 1
-  }
+  "refmap": "may.refmap.json"
 }
