@@ -8,7 +8,7 @@ package tech.kardyn.may.common.items;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class MAYItems {
     public static final DeferredRegister<Item> ITEMS;

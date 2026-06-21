@@ -10,12 +10,13 @@ import com.simibubi.create.compat.jei.category.BasinCategory;
 import com.simibubi.create.content.processing.basin.BasinRecipe;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.content.processing.recipe.HeatCondition;
+import com.simibubi.create.foundation.utility.CreateLang;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.dries007.tfc.common.blocks.TFCBlocks;
-import net.dries007.tfc.common.capabilities.heat.Heat;
+import net.dries007.tfc.common.component.heat.Heat;
 import net.dries007.tfc.config.TFCConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -48,7 +49,14 @@ public abstract class BasinCategoryMixin{
     @Inject(method = "draw(Lcom/simibubi/create/content/processing/basin/BasinRecipe;Lmezz/jei/api/gui/ingredient/IRecipeSlotsView;Lnet/minecraft/client/gui/GuiGraphics;DD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIIZ)I", remap = true), cancellable = true, remap = false)
     public void draw(BasinRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY, CallbackInfo ci){
         HeatCondition requiredHeat = recipe.getRequiredHeat();
-        MutableComponent text = TFCConfig.CLIENT.heatTooltipStyle.get().formatColored(Heat.values()[requiredHeat == HeatCondition.SUPERHEATED ? 10 : 7].getMin());
+        MutableComponent text = CreateLang.translateDirect(requiredHeat.getTranslationKey());
+        text = switch (requiredHeat) {
+            case HeatCondition.HEATED ->
+                    TFCConfig.CLIENT.heatTooltipStyle.get().formatColored(Heat.values()[7].getMin());
+            case HeatCondition.SUPERHEATED ->
+                    TFCConfig.CLIENT.heatTooltipStyle.get().formatColored(Heat.values()[10].getMin());
+            default -> text;
+        };
         graphics.drawString(Minecraft.getInstance().font, text, 9, 86, requiredHeat.getColor());
 
         ci.cancel();

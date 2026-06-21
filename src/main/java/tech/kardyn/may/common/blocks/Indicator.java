@@ -4,14 +4,13 @@
  *     Find full license text at project root or at https://www.gnu.org/licenses/gpl-3.0.txt
  */
 
-package tech.kardyn.may.common.blocks.rock;
+package tech.kardyn.may.common.blocks;
 
 import net.dries007.tfc.common.blocks.rock.Ore;
 import net.dries007.tfc.common.items.TFCItems;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ItemLike;
 
 import javax.annotation.Nullable;
-import java.util.function.Supplier;
 
 public enum Indicator {
     BITUMINOUS_COAL(true, TFCItems.ORES.get(Ore.BITUMINOUS_COAL)),
@@ -36,13 +35,13 @@ public enum Indicator {
     TOPAZ(false);
 
     private final boolean hasIndicator;
-    private final @Nullable Supplier<? extends Item> pickItem;
+    private final @Nullable ItemLike pickItem;
 
-    private Indicator(boolean hasIndicator) {
+    Indicator(boolean hasIndicator) {
         this(hasIndicator, null);
     }
 
-    private Indicator(boolean hasIndicator, @Nullable Supplier<? extends Item> pickItem) {
+    Indicator(boolean hasIndicator, @Nullable ItemLike pickItem) {
         this.hasIndicator = hasIndicator;
         this.pickItem = pickItem;
     }
@@ -51,8 +50,8 @@ public enum Indicator {
         return this.hasIndicator;
     }
 
-    public @Nullable Supplier<? extends Item> getPickItem(){
-        return pickItem;
+    public @Nullable ItemLike getPickItem(){
+        return this.pickItem;
     }
 
 }

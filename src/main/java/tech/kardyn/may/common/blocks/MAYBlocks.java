@@ -8,43 +8,49 @@ package tech.kardyn.may.common.blocks;
 
 import net.dries007.tfc.common.blocks.ExtendedProperties;
 import net.dries007.tfc.common.blocks.GroundcoverBlock;
+import net.dries007.tfc.common.items.TFCItems;
 import net.dries007.tfc.util.Helpers;
+import net.dries007.tfc.util.registry.RegistrationHelpers;
+import net.dries007.tfc.util.registry.RegistryHolder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
-import tech.kardyn.may.common.blocks.rock.Indicator;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static net.dries007.tfc.common.blocks.GroundcoverBlock.PIXEL_HIGH;
+import static net.dries007.tfc.common.blocks.GroundcoverBlock.SMALL;
 
 public class MAYBlocks {
     public static final DeferredRegister<Block> BLOCKS;
-    public static final Map<Indicator, RegistryObject<Block>> INDICATORS;
+    public static final Map<Indicator, MAYBlocks.Id<Block>> INDICATORS;
 
     static {
         BLOCKS = DeferredRegister.create(Registries.BLOCK, "may");
-        INDICATORS = Helpers.mapOfKeys(
-                Indicator.class,
-                Indicator::hasIndicator,
-                (indicator) -> registerBlock(
-                        MAYBlocks.BLOCKS,
-                        "ore/" + indicator.name(),
-                        () -> new GroundcoverBlock(ExtendedProperties.of(BlockBehaviour.Properties.of()
-                                .mapColor(MapColor.GRASS).strength(0.05F, 0.0F)
-                                .sound(SoundType.NETHER_ORE).noCollission().pushReaction(PushReaction.DESTROY)),
-                                PIXEL_HIGH,
-                                indicator.getPickItem())));
+        INDICATORS = Helpers.mapOf(Indicator.class, Indicator::hasIndicator, (indicator) -> register("indicator/" + indicator.name(), () -> getGroundcoverBlockSupplier(indicator)));
     }
 
-    public static <T extends Block> RegistryObject<T> registerBlock(DeferredRegister<Block> blocks, String name, Supplier<T> blockSupplier) {
-        return blocks.register(name.toLowerCase(Locale.ROOT), blockSupplier);
+    private static @NotNull GroundcoverBlock getGroundcoverBlockSupplier(Indicator indicator) {
+        return new GroundcoverBlock(ExtendedProperties.of(BlockBehaviour.Properties.of().mapColor(MapColor.GRASS).strength(0.05F, 0.0F).sound(SoundType.NETHER_ORE).noCollission().pushReaction(PushReaction.DESTROY)).cloneItem(indicator.getPickItem()), SMALL);
+    }
+
+    private static <T extends Block> MAYBlocks.Id<T> register(String name, Supplier<T> blockSupplier) {
+        return new Id<>(RegistrationHelpers.registerBlock(BLOCKS, TFCItems.ITEMS, name, blockSupplier, (Function<T, ? extends BlockItem>)((block) -> new BlockItem(block, new Item.Properties()))));
+    }
+
+    public record Id<T extends Block>(DeferredHolder<Block, T> holder) implements RegistryHolder<Block, T>, ItemLike {
+        public @NotNull Item asItem() {
+            return this.get().asItem();
+        }
     }
 }

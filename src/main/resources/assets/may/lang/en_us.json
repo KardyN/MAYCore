@@ -1,0 +1,13 @@
+{
+  "itemGroup.may": "Example Mod Tab",
+  "block.may.example_block": "Example Block",
+  "item.may.example_item": "Example Item",
+
+  "may.configuration.title": "MAYCore Configs",
+  "may.configuration.section.may.common.toml": "MAYCore Configs",
+  "may.configuration.section.may.common.toml.title": "MAYCore Configs",
+  "may.configuration.items": "Item List",
+  "may.configuration.logDirtBlock": "Log Dirt Block",
+  "may.configuration.magicNumberIntroduction": "Magic Number Text",
+  "may.configuration.magicNumber": "Magic Number"
+}
