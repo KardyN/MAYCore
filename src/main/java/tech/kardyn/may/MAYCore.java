@@ -1,3 +1,9 @@
+/**
+ *     MAYCore  Copyright (C) 2026 KardyN
+ *     The following code is licensed under GNU General Public License v3.0
+ *     Find full license text at project root or at https://www.gnu.org/licenses/gpl-3.0.txt
+ */
+
 package tech.kardyn.may;
 
 import com.mojang.logging.LogUtils;
@@ -11,6 +17,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
 import tech.kardyn.may.common.blocks.MAYBlocks;
 import tech.kardyn.may.common.items.MAYItems;
+import tech.kardyn.may.common.utils.MAYInteractionManager;
 
 @Mod(MAYCore.MODID)
 public class MAYCore {
@@ -26,6 +33,7 @@ public class MAYCore {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         LOGGER.info("Hello from MAYCore setup!");
+        event.enqueueWork(MAYInteractionManager::init);
     }
 
     @SubscribeEvent
