@@ -16,6 +16,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
 import tech.kardyn.may.common.blocks.MAYBlocks;
+import tech.kardyn.may.common.component.food.FoodTraits;
 import tech.kardyn.may.common.items.MAYItems;
 import tech.kardyn.may.common.utils.MAYInteractionManager;
 
@@ -27,6 +28,7 @@ public class MAYCore {
     public MAYCore(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
         MAYBlocks.BLOCKS.register(modEventBus);
+        FoodTraits.TRAITS.register(modEventBus);
         MAYItems.ITEMS.register(modEventBus);
         NeoForge.EVENT_BUS.register(this);
     }

@@ -52,8 +52,13 @@ repositories {
             includeGroup "dev.emi"
         }
     }
-    maven { url = "https://maven.createmod.net" }
-    maven { url = "https://maven.gegy.dev" }}
+    maven {
+        url "https://maven.createmod.net"
+    }
+    maven {
+        url "https://maven.gegy.dev"
+    }
+}
 
 base {
     archivesName = mod_id
