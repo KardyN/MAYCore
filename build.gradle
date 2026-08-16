@@ -137,6 +137,12 @@ neoForge {
     }
 }
 
+/*
+ * MAYCore  Copyright (C) 2026 KardyN
+ * The following code is licensed under GNU General Public License v3.0
+ * Find full license text at project root or at https://www.gnu.org/licenses/gpl-3.0.txt
+ */
+
 // Sets up a dependency configuration called 'localRuntime'.
 // This configuration should be used instead of 'runtimeOnly' to declare
 // a dependency that will be present for runtime testing but that is
@@ -163,6 +169,10 @@ dependencies {
     implementation("curse.maven:arborfirmacraft-877545:${afc_version}")
     // IE
     implementation("blusunrize.immersiveengineering:ImmersiveEngineering:${ie_version}")
+    // IP
+    implementation("curse.maven:ImmersivePetroleum-268250:${ip_version}")
+    // JEI Multiblocks
+    implementation("curse.maven:jeimultiblocks-634571:${jei_multiblocks_version}")
     // Create
     implementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
     implementation("net.createmod.ponder:ponder-neoforge:${ponder_version}")
