@@ -19,6 +19,14 @@ import tech.kardyn.may.common.blocks.MAYBlocks;
 import tech.kardyn.may.common.component.food.FoodTraits;
 import tech.kardyn.may.common.items.MAYItems;
 import tech.kardyn.may.common.utils.MAYInteractionManager;
+=======
+import tech.kardyn.may.common.block.MAYBlocks;
+import tech.kardyn.may.common.block.multiblock.MAYMultiblocks;
+import tech.kardyn.may.common.component.food.FoodTraits;
+import tech.kardyn.may.common.item.MAYItems;
+import tech.kardyn.may.common.register.MAYMultiblockLogic;
+import tech.kardyn.may.common.util.MAYInteractionManager;
+>>>>>>> Stashed changes
 
 @Mod(MAYCore.MODID)
 public class MAYCore {
@@ -28,6 +36,12 @@ public class MAYCore {
     public MAYCore(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
         MAYBlocks.BLOCKS.register(modEventBus);
+<<<<<<< Updated upstream
+=======
+        MAYItems.ITEMS.register(modEventBus);
+        MAYMultiblocks.init();
+        MAYMultiblockLogic.init(modEventBus);
+>>>>>>> Stashed changes
         FoodTraits.TRAITS.register(modEventBus);
         MAYItems.ITEMS.register(modEventBus);
         NeoForge.EVENT_BUS.register(this);
