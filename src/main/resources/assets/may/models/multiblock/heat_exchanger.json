@@ -1,0 +1,44 @@
+{
+  "parent": "minecraft:block/block",
+  "dynamic": false,
+  "inner_model": {
+    "parent": "minecraft:block/block",
+    "automatic_culling": false,
+    "flip_v": true,
+    "loader": "neoforge:obj",
+    "model": "may:models/multiblock/heat_exchanger.obj",
+    "render_type": "minecraft:cutout",
+    "textures": {
+      "particle": "may:multiblock/heat_exchanger",
+      "texture": "may:multiblock/heat_exchanger"
+    }
+  },
+  "loader": "immersiveengineering:basic_split",
+  "split_parts": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      2,
+      0,
+      0
+    ],
+    [
+      3,
+      0,
+      0
+    ],
+    [
+      4,
+      0,
+      0
+    ]
+  ]
+}

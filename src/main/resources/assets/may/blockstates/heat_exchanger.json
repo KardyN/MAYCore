@@ -1,0 +1,42 @@
+{
+  "variants": {
+    "facing=east,mirrored=false": {
+      "model": "may:multiblock/heat_exchanger",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=east,mirrored=true": {
+      "model": "may:multiblock/heat_exchanger",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=north,mirrored=false": {
+      "model": "may:multiblock/heat_exchanger",
+      "uvlock": true
+    },
+    "facing=north,mirrored=true": {
+      "model": "may:multiblock/heat_exchanger",
+      "uvlock": true
+    },
+    "facing=south,mirrored=false": {
+      "model": "may:multiblock/heat_exchanger",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=south,mirrored=true": {
+      "model": "may:multiblock/heat_exchanger",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=west,mirrored=false": {
+      "model": "may:multiblock/heat_exchanger",
+      "uvlock": true,
+      "y": 270
+    },
+    "facing=west,mirrored=true": {
+      "model": "may:multiblock/heat_exchanger",
+      "uvlock": true,
+      "y": 270
+    }
+  }
+}

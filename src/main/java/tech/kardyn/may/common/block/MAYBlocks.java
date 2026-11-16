@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
@@ -56,5 +57,9 @@ public class MAYBlocks {
         public @NotNull Item asItem() {
             return this.get().asItem();
         }
+    }
+
+    public static void init(IEventBus modEventBus) {
+        BLOCKS.register(modEventBus);
     }
 }

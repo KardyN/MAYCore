@@ -8,11 +8,16 @@ package tech.kardyn.may.common.item;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Item;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class MAYItems {
     public static final DeferredRegister<Item> ITEMS;
     static{
         ITEMS = DeferredRegister.create(Registries.ITEM, "may");
+    }
+
+    public static void init(IEventBus modEventBus) {
+        ITEMS.register(modEventBus);
     }
 }

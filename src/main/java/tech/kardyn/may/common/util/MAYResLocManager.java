@@ -8,7 +8,7 @@ package tech.kardyn.may.common.util;
 
 import net.minecraft.resources.ResourceLocation;
 
-public class ResourceLocationManager {
+public class MAYResLocManager {
     public static ResourceLocation mayResLoc(String path) {
         return ResourceLocation.fromNamespaceAndPath("may", path);
     }

@@ -13,11 +13,16 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.slf4j.Logger;
+import tech.kardyn.may.common.MAYMenuTypes;
 import tech.kardyn.may.common.block.MAYBlocks;
-import tech.kardyn.may.common.component.food.FoodTraits;
+import tech.kardyn.may.common.component.food.MAYFoodTraits;
+import tech.kardyn.may.common.crafting.MAYRecipeTypes;
+import tech.kardyn.may.common.crafting.MAYRecipeSerializers;
+import tech.kardyn.may.common.crafting.MAYResourceManagerReloadListener;
 import tech.kardyn.may.common.item.MAYItems;
+import tech.kardyn.may.common.multiblock.MAYMultiblocks;
 import tech.kardyn.may.common.util.MAYInteractionManager;
 
 @Mod(MAYCore.MODID)
@@ -27,19 +32,24 @@ public class MAYCore {
 
     public MAYCore(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
-        MAYBlocks.BLOCKS.register(modEventBus);
-        MAYItems.ITEMS.register(modEventBus);
-        FoodTraits.TRAITS.register(modEventBus);
+        MAYBlocks.init(modEventBus);
+        MAYItems.init(modEventBus);
+        MAYFoodTraits.init(modEventBus);
+        MAYMultiblocks.init(modEventBus);
+        MAYRecipeTypes.init(modEventBus);
+        MAYRecipeSerializers.init(modEventBus);
+        MAYMenuTypes.forceClassLoad();
+        NeoForge.EVENT_BUS.addListener(this::addReloadListeners);
         NeoForge.EVENT_BUS.register(this);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-        LOGGER.info("Hello from MAYCore setup!");
+        MAYMultiblocks.setup(event);
         event.enqueueWork(MAYInteractionManager::init);
     }
 
     @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event) {
-        LOGGER.info("Hello from server starting MAYCore");
+    private void addReloadListeners(AddReloadListenerEvent event) {
+        event.addListener(new MAYResourceManagerReloadListener(event.getServerResources()));
     }
 }

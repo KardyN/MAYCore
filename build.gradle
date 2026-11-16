@@ -58,6 +58,9 @@ repositories {
     maven {
         url "https://maven.gegy.dev"
     }
+    maven {
+        url "https://maven.blamejared.com/"
+    }
 }
 
 base {
@@ -180,7 +183,10 @@ dependencies {
     runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
     implementation("com.tterrag.registrate:Registrate:${registrate_version}")
     // EMI
-    implementation("dev.emi:emi-neoforge:${emi_version}")
+    // implementation("dev.emi:emi-neoforge:${emi_version}")
+    // DualCodecs
+    // Source: https://mvnrepository.com/artifact/malte0811/DualCodecs
+    implementation("malte0811:DualCodecs:0.1.2")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
