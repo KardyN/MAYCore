@@ -1,4 +1,10 @@
-package tech.kardyn.may.common.multiblock.logic.heat_exchanger;
+/*
+ * MAYCore  Copyright (C) 2026 KardyN
+ * The following code is licensed under GNU General Public License v3.0
+ * Find full license text at project root or at https://www.gnu.org/licenses/gpl-3.0.txt
+ */
+
+package tech.kardyn.may.common.multiblock.logic;
 
 import blusunrize.immersiveengineering.api.energy.AveragingEnergyStorage;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.component.IClientTickableComponent;
@@ -11,7 +17,7 @@ import blusunrize.immersiveengineering.api.multiblocks.blocks.logic.IMultiblockS
 import blusunrize.immersiveengineering.api.multiblocks.blocks.util.CapabilityPosition;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.util.RelativeBlockFace;
 import blusunrize.immersiveengineering.api.multiblocks.blocks.util.ShapeType;
-import blusunrize.immersiveengineering.common.blocks.multiblocks.process.MultiblockProcess;
+import blusunrize.immersiveengineering.common.blocks.multiblocks.process.MultiblockProcessInMachine;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.process.MultiblockProcessor;
 import blusunrize.immersiveengineering.common.blocks.multiblocks.process.ProcessContext;
 import blusunrize.immersiveengineering.common.fluids.ArrayFluidHandler;
@@ -42,11 +48,13 @@ public class HeatExchangerLogic implements IMultiblockLogic<HeatExchangerLogic.S
     public static final int TANK_TUBE_OUT = 1;
     public static final int TANK_SHELL_IN = 2;
     public static final int TANK_SHELL_OUT = 3;
+    public static final int ENERGY_CAPACITY = 1000;
     public static final CapabilityPosition TUBE_FLUID_IN = new CapabilityPosition(0, 0, 0, RelativeBlockFace.DOWN);
     public static final CapabilityPosition TUBE_FLUID_OUT = new CapabilityPosition(4, 0, 0, RelativeBlockFace.DOWN);
     public static final CapabilityPosition SHELL_FLUID_IN = new CapabilityPosition(3, 0, 0, RelativeBlockFace.UP);
     public static final CapabilityPosition SHELL_FLUID_OUT = new CapabilityPosition(1, 0, 0, RelativeBlockFace.UP);
     public static final BlockPos REDSTONE_IN = new BlockPos(2, 0, 0);
+    public static final CapabilityPosition ENERGY_IN = new CapabilityPosition(2, 0, 0, RelativeBlockFace.UP);
 
     @Override
     public State createInitialState(IInitialMultiblockContext<State> capabilitySource) {
@@ -60,45 +68,25 @@ public class HeatExchangerLogic implements IMultiblockLogic<HeatExchangerLogic.S
             state.cooldownTicks--;
         }
 
-        if (state.wasActive) {
+        if (state.active) {
             state.cooldownTicks = 20;
         }
     }
 
     @Override
     public void tickServer(IMultiblockContext<State> context) {
-        boolean update = false;
-
-        State state = context.getState();
-        Level level = context.getLevel().getRawLevel();
-        if (state.wasActive) {
-            state.wasActive = false;
-            update = true;
+        final State state = context.getState();
+        final Level level = context.getLevel().getRawLevel();
+        final boolean wasActive = state.active;
+        state.active = state.processor.tickServer(state, context.getLevel(), state.rsState.isEnabled(context));
+        if (wasActive != state.active) {
+            context.markDirtyAndSync();
         }
-
-        if (state.rsState.isEnabled(context))
-            if (state.processor.getQueueSize() < state.processor.getMaxQueueSize())
-                if (state.tanks.tubeInput().getFluidAmount() > 0 && state.tanks.shellInput().getFluidAmount() > 0) {
-                    RecipeHolder<HeatExchangerRecipe> holder = HeatExchangerRecipe.findRecipe(state.tanks.tubeInput().getFluid().copyWithAmount(1000), state.tanks.shellInput().getFluid().copyWithAmount(1000));
-                    if (holder != null) {
-                        int[] inputTanks = new int[]{TANK_TUBE_IN, TANK_SHELL_IN};
-                        int[] inputAmounts = new int[]{1000, 1000};
-                        HeatExchangerProcess process = new HeatExchangerProcess(holder, inputTanks, inputAmounts);
-                        if (state.processor.addProcessToQueue(process, level, true)) {
-                            state.processor.addProcessToQueue(process, level, false);
-                            update = true;
-                        }
-                    }
-                }
-
-        if (state.processor.tickServer(state, context.getLevel(), !state.processor.getQueue().isEmpty())) {
-            update = true;
-            state.wasActive = true;
-        }
+        tryEnqueueProcess(state, level);
 
         if (state.tanks.tubeOutput().getFluidAmount() > 0) {
             BlockPos tubeOutPos = context.getLevel().toAbsolute(TUBE_FLUID_OUT.posInMultiblock()).above();
-            update |= FluidUtil.getFluidHandler(level, tubeOutPos, Direction.DOWN).map(output -> {
+             if (FluidUtil.getFluidHandler(level, tubeOutPos, Direction.DOWN).map(output -> {
                 boolean ret = false;
                 FluidStack target = state.tanks.tubeOutput().getFluid();
                 target = FluidHelper.copyFluid(target, Math.min(target.getAmount(), 1000));
@@ -110,12 +98,14 @@ public class HeatExchangerLogic implements IMultiblockLogic<HeatExchangerLogic.S
                 }
 
                 return ret;
-            }).orElse(false);
+            }).orElse(false)) {
+                 context.markDirtyAndSync();
+             }
         }
 
         if (state.tanks.shellOutput().getFluidAmount() > 0) {
             BlockPos shellOutPos = context.getLevel().toAbsolute(SHELL_FLUID_OUT.posInMultiblock()).below();
-            update |= FluidUtil.getFluidHandler(level, shellOutPos, Direction.UP).map(output -> {
+            if (FluidUtil.getFluidHandler(level, shellOutPos, Direction.UP).map(output -> {
                 boolean ret = false;
                 FluidStack target = state.tanks.shellOutput().getFluid();
                 target = FluidHelper.copyFluid(target, Math.min(target.getAmount(), 1000));
@@ -127,16 +117,32 @@ public class HeatExchangerLogic implements IMultiblockLogic<HeatExchangerLogic.S
                 }
 
                 return ret;
-            }).orElse(false);
+            }).orElse(false)) {
+                context.markDirtyAndSync();
+            }
         }
+    }
 
-        if (update) {
-            context.markDirtyAndSync();
+    private void tryEnqueueProcess(State state, Level level) {
+        if (state.processor.getQueueSize() >= state.processor.getMaxQueueSize()) {
+            return;
         }
+        if (state.tanks.tubeInput().getFluidAmount() <= 0 || state.tanks.shellInput().getFluidAmount() <= 0) {
+            return;
+        }
+        RecipeHolder<HeatExchangerRecipe> recipe = HeatExchangerRecipe.findRecipe(state.tanks.tubeInput().getFluid().copyWithAmount(1000), state.tanks.shellInput().getFluid().copyWithAmount(1000));
+        if (recipe == null) {
+            return;
+        }
+        MAYCore.LOGGER.info("Found relevant recipe");
+        MultiblockProcessInMachine<HeatExchangerRecipe> process = new MultiblockProcessInMachine<>(recipe);
+        process.setInputTanks(TANK_TUBE_IN, TANK_SHELL_IN);
+        state.processor.addProcessToQueue(process, level, false);
     }
 
     @Override
     public void registerCapabilities(CapabilityRegistrar<State> register) {
+        register.registerAtOrNull(Capabilities.EnergyStorage.BLOCK, ENERGY_IN, state -> state.energy);
         register.register(Capabilities.FluidHandler.BLOCK, (state, pos) -> {
             if (TUBE_FLUID_IN.equalsOrNullFace(pos)) {
                 return state.tubeFluidInput;
@@ -157,7 +163,7 @@ public class HeatExchangerLogic implements IMultiblockLogic<HeatExchangerLogic.S
     }
 
     public static class State implements IMultiblockState, ProcessContext.ProcessContextInMachine<HeatExchangerRecipe> {
-        public final AveragingEnergyStorage energy = new AveragingEnergyStorage(1);
+        public final AveragingEnergyStorage energy = new AveragingEnergyStorage(ENERGY_CAPACITY);
         public final RedstoneControl.RSState rsState = RedstoneControl.RSState.enabledByDefault();
         public final HeatExchangerLogic.Tanks tanks = HeatExchangerLogic.Tanks.server();
         public final MultiblockProcessor.InMachineProcessor<HeatExchangerRecipe> processor;
@@ -168,7 +174,7 @@ public class HeatExchangerLogic implements IMultiblockLogic<HeatExchangerLogic.S
 
         /** Flickering avoidance for the "Active" Texture overlay (info from IP)*/
         public int cooldownTicks = 0;
-        public boolean wasActive = false;
+        public boolean active = false;
 
         public State(IInitialMultiblockContext<State> context) {
             this.processor = new MultiblockProcessor.InMachineProcessor<>(1, 0.0F, 1, context.getMarkDirtyRunnable(), State::getRecipeForId);
@@ -187,15 +193,15 @@ public class HeatExchangerLogic implements IMultiblockLogic<HeatExchangerLogic.S
             nbt.put("tanks", this.tanks.writeNBT(provider));
             nbt.put("energy", this.energy.serializeNBT(provider));
             nbt.put("processor", this.processor.toNBT(provider));
-            nbt.putBoolean("wasActive", this.wasActive);
+            nbt.putBoolean("wasActive", this.active);
         }
 
         public void readSaveNBT(CompoundTag nbt, HolderLookup.Provider provider) {
             this.rsState.readSaveNBT(nbt, provider);
             this.tanks.readNBT(nbt.getCompound("tanks"), provider);
             this.energy.deserializeNBT(provider, nbt.getCompound("energy"));
-            this.processor.fromNBT(nbt.get("processor"), HeatExchangerProcess::new, provider);
-            this.wasActive = nbt.getBoolean("wasActive");
+            this.processor.fromNBT(nbt.get("processor"), ((getRecipe, data, provider1) -> new MultiblockProcessInMachine<>(getRecipe, data)), provider);
+            this.active = nbt.getBoolean("wasActive");
         }
 
         public void writeSyncNBT(CompoundTag nbt, HolderLookup.Provider provider) {
@@ -217,13 +223,6 @@ public class HeatExchangerLogic implements IMultiblockLogic<HeatExchangerLogic.S
 
         public int[] getOutputTanks() {
             return new int[]{TANK_TUBE_OUT, TANK_SHELL_OUT};
-        }
-
-        public boolean additionalCanProcessCheck(MultiblockProcess<HeatExchangerRecipe, ?> process, Level level) {
-            // Assuming all recipes are 1:1 mB
-            return true;
-//            return (this.tanks.tubeOutput().getCapacity() > this.tanks.tubeOutput().getFluidAmount())
-//                    && (this.tanks.shellOutput().getCapacity() > this.tanks.shellOutput().getFluidAmount());
         }
     }
 

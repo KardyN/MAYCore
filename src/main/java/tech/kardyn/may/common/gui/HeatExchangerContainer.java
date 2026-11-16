@@ -1,3 +1,9 @@
+/*
+ * MAYCore  Copyright (C) 2026 KardyN
+ * The following code is licensed under GNU General Public License v3.0
+ * Find full license text at project root or at https://www.gnu.org/licenses/gpl-3.0.txt
+ */
+
 package tech.kardyn.may.common.gui;
 
 import blusunrize.immersiveengineering.common.gui.IEContainerMenu;
@@ -6,7 +12,7 @@ import flaxbeard.immersivepetroleum.common.util.inventory.FluidTankFiltered;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import tech.kardyn.may.common.multiblock.instance.HeatExchangerMultiblock;
-import tech.kardyn.may.common.multiblock.logic.heat_exchanger.HeatExchangerLogic;
+import tech.kardyn.may.common.multiblock.logic.HeatExchangerLogic;
 
 public class HeatExchangerContainer extends MultiblockAwareGuiContainer {
     public final FluidTankFiltered tubeInput;

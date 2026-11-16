@@ -1,3 +1,9 @@
+/*
+ * MAYCore  Copyright (C) 2026 KardyN
+ * The following code is licensed under GNU General Public License v3.0
+ * Find full license text at project root or at https://www.gnu.org/licenses/gpl-3.0.txt
+ */
+
 package tech.kardyn.may.common.multiblock;
 
 import blusunrize.immersiveengineering.api.multiblocks.MultiblockHandler;
@@ -28,7 +34,7 @@ import tech.kardyn.may.common.MAYMenuTypes;
 import tech.kardyn.may.common.block.MAYBlocks;
 import tech.kardyn.may.common.item.MAYItems;
 import tech.kardyn.may.common.multiblock.instance.HeatExchangerMultiblock;
-import tech.kardyn.may.common.multiblock.logic.heat_exchanger.HeatExchangerLogic;
+import tech.kardyn.may.common.multiblock.logic.HeatExchangerLogic;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

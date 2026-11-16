@@ -1,19 +1,19 @@
 {
   "type": "may:heat_exchanger",
   "tubeInput": {
-    "amount": 1000,
+    "amount": 1,
     "tag": "c:water"
   },
   "tubeOutput": {
-    "amount": 1000,
+    "amount": 10,
     "id": "minecraft:lava"
   },
   "shellInput": {
-    "amount": 1000,
+    "amount": 1,
     "tag": "c:lava"
   },
   "shellOutput": {
-    "amount": 1000,
+    "amount": 10,
     "id": "minecraft:water"
   }
 }
