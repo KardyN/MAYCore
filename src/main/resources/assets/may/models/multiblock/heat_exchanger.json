@@ -40,5 +40,8 @@
       0,
       0
     ]
-  ]
+  ],
+  "textures": {
+    "particle": "may:multiblock/heat_exchanger"
+  }
 }
